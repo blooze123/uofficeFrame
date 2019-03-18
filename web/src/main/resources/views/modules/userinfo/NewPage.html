@@ -1,0 +1,27 @@
+<% layout('/layouts/default.html', {title: '自定义页面', libs: ['validate'], bodyClass: ''}){ %>
+<div class="main-content">
+    <div class="box box-main">
+        <div class="box-header with-border">
+            <div class="box-title">
+                <i class="fa icon-book-open"></i> 菜单管理
+            </div>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <div class="box-body">
+            测试前端获取普通POJO类：   ${user.username}
+            测试前端获取list链表：     ${userList[0].username}
+            测试前端获取Map:${userMap["user"].username}
+        </div>
+        <div class="box-footer" id="boxFooter">
+            ${date(),dateFormat="yyyy-MM-dd"}<br>
+            <%
+            var a="hi man";
+            %>
+            ${print(a)}
+
+        </div>
+    </div>
+</div>
+<% } %>

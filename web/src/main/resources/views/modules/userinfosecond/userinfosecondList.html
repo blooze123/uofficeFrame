@@ -1,0 +1,111 @@
+<% layout('/layouts/default.html', {title: '用户管理第二版管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('用户管理第二版管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('userinfosecond:userinfosecond:edit')){ %>
+					<a href="${ctx}/userinfosecond/userinfosecond/form" class="btn btn-default btnTool" title="${text('新增用户管理第二版')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${userinfosecond}" action="${ctx}/userinfosecond/userinfosecond/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('userid')}：</label>
+					<div class="control-inline">
+						<#form:input path="userid" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('username')}：</label>
+					<div class="control-inline">
+						<#form:input path="username" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('sex')}：</label>
+					<div class="control-inline">
+						<#form:input path="sex" maxlength="5" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('age')}：</label>
+					<div class="control-inline">
+						<#form:input path="age" maxlength="3" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('phone')}：</label>
+					<div class="control-inline">
+						<#form:input path="phone" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('remarks')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('status')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("userid")}', name:'userid', index:'a.userid', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/userinfosecond/userinfosecond/form?id='+row.id+'" class="btnList" data-title="${text("编辑用户管理第二版")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("username")}', name:'username', index:'a.username', width:150, align:"left"},
+		{header:'${text("sex")}', name:'sex', index:'a.sex', width:150, align:"left"},
+		{header:'${text("age")}', name:'age', index:'a.age', width:150, align:"center"},
+		{header:'${text("phone")}', name:'phone', index:'a.phone', width:150, align:"center"},
+		{header:'${text("update_date")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("remarks")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("status")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('userinfosecond:userinfosecond:edit')){ %>
+				actions.push('<a href="${ctx}/userinfosecond/userinfosecond/form?id='+row.id+'" class="btnList" title="${text("编辑用户管理第二版")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/userinfosecond/userinfosecond/disable?id='+row.id+'" class="btnList" title="${text("停用用户管理第二版")}" data-confirm="${text("确认要停用该用户管理第二版吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				}
+				if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/userinfosecond/userinfosecond/enable?id='+row.id+'" class="btnList" title="${text("启用用户管理第二版")}" data-confirm="${text("确认要启用该用户管理第二版吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/userinfosecond/userinfosecond/delete?id='+row.id+'" class="btnList" title="${text("删除用户管理第二版")}" data-confirm="${text("确认要删除该用户管理第二版吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			<% if(hasPermi('userinfosecond:userinfosecond:sendMessage')){ %>
+					actions.push('<a href="${ctx}/userinfosecond/userinfosecond/sendMessage?id='+row.id+'" class="btnList" title="${text("测试消息是否发生成功")}" data-confirm="${text("开始测试发生消息")}"><i class="icon-call-out"></i></a>&nbsp;');
+				<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>
